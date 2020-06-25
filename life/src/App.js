@@ -43,7 +43,7 @@ function App() {
 
   function updateBoard(x, y){
     let newBoard = [...board];
-    newBoard[x][y].active = !newBoard[x][y].active;
+    newBoard[x][y].active = !board[x][y].active;
     setBoard(board => (newBoard));
   }
 
@@ -54,7 +54,6 @@ function App() {
 
   //returns count of neighbours to cell
   function countNeighbours(x,y){
-    console.log("############");
     let count = 0;
     //find a more efficient way to iterate
 
@@ -69,20 +68,18 @@ function App() {
         count = (board[x-1][y+1].active) ? count + 1 : count;
       }
     }
-    console.log(count);
 
     //col2
     if(y - 1 >= 0){
       count = (board[x][y-1].active) ? count + 1 : count;
     }
     if(y + 1 <= boardSize - 1){
-      count = (board[x][y+1]) ? count + 1 : count;
+      count = (board[x][y+1].active) ? count + 1 : count;
     }
-    /*
-    why is count 2???
-    for 0,0 count increments at col 2 and 3 when it should only on 3 at [x+1][y]
-    */
-    console.log(count);
+    
+    //why is count 2???
+    //for 0,0 count increments at col 2 and 3 when it should only on 3 at [x+1][y]
+    
     //col3
     //check second array bounds
     if(x + 1 <= boardSize - 1){
@@ -94,11 +91,8 @@ function App() {
         count = (board[x+1][y+1].active) ? count + 1 : count;
       }
     }
-    console.log(count);
-    if(count === 2){
-      console.log(x + " : " + y);
-    }
-    console.log("--------------")
+
+
     return count;
   }
 
@@ -114,27 +108,41 @@ function App() {
 
   }
 
-  function rule1(){
-    //1.Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+  function rule1(x, y){
+    updateBoard(x, y);
   }
-  function rule2(){
-    //2.Any live cell with two or three live neighbours lives on to the next generation.
-  }
-  
-  function rule3(){
-    //3.Any live cell with more than three live neighbours dies, as if by overpopulation.
+  function rule2(x, y){
+    //This function does nothing
   }
   
-  function rule4(){
-    //4.Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+  function rule3(x, y){
+    updateBoard(x, y);
+  }
+  
+  function rule4(x, y){
+    updateBoard(x, y);
   }
   
   function updateCell(numNeighbours, x, y){
-    //console.log(numNeighbours);
-    rule1();
-    rule2();
-    rule3();
-    rule4();
+    
+    //1.Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+    if(board[x][y].active && numNeighbours < 2){
+      rule1(x, y);
+    }
+    //2.Any live cell with two or three live neighbours lives on to the next generation.
+    if(board[x][y].active && (numNeighbours === 2 || numNeighbours === 3)){
+      rule2(x, y);
+    }
+    //3.Any live cell with more than three live neighbours dies, as if by overpopulation.
+    if(board[x][y].active && numNeighbours > 3){
+      rule3(x, y);
+    }
+
+    //4.Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+    if(!board[x][y].active && numNeighbours === 3){
+      rule4(x, y);
+    }
+    
 
   }
   
