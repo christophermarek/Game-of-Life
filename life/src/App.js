@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [boardSize, setSize] = useState(10);
+  const [boardSize, setSize] = useState(20);
   const [board, setBoard] = useState([]);
   const [started, setStarted] = useState(false);
+  const [changes, setChanges] = useState([]);
+  //const [iterations, setIterations] = useState(0); 
 
   useEffect(() => {
     let interval = null;
@@ -16,7 +18,7 @@ function App() {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [started]);
+  }, [started, changes]);
 
   //generateBoard from boardSize args
   function generateBoard(e){
@@ -32,6 +34,7 @@ function App() {
           active:false,
           x: i,
           y: j,
+          updated: false,
         };
         columns.push(defaultTile);
       }
@@ -56,6 +59,10 @@ function App() {
   function countNeighbours(x,y){
     let count = 0;
     //find a more efficient way to iterate
+
+    if(x === 0 && y === 2){
+      //console.log("break here");
+    }
 
     //col1
     //out of first array bounds
@@ -92,6 +99,8 @@ function App() {
       }
     }
 
+    //console.log("x: " + x + " y:" + y + " with " + count + " neighbours");
+
 
     return count;
   }
@@ -108,19 +117,39 @@ function App() {
 
   }
 
+  function storeChanges(x, y){
+    let newBoard = [...board];
+    newBoard[x][y].updated = true;
+    setBoard(board => (newBoard));
+  }
+
+  function applyUpdates(){
+    let newBoard = [...board];
+    for(let x = 0; x < boardSize; x++){
+      for(let y = 0; y < boardSize; y++){
+        if(newBoard[x][y].updated === true){
+          newBoard[x][y].updated = false;
+          newBoard[x][y].active = !newBoard[x][y].active;
+        }
+      }
+    }
+    setBoard(board => (newBoard));
+  }
+
+
   function rule1(x, y){
-    updateBoard(x, y);
+    storeChanges(x, y);
   }
   function rule2(x, y){
     //This function does nothing
   }
   
   function rule3(x, y){
-    updateBoard(x, y);
+    storeChanges(x, y);
   }
   
   function rule4(x, y){
-    updateBoard(x, y);
+    storeChanges(x, y);
   }
   
   function updateCell(numNeighbours, x, y){
@@ -147,7 +176,9 @@ function App() {
   }
   
   function simulationLoop(){
+    //might have to use promises to make functions go in order
     parseBoard();
+    applyUpdates();
   }
 
   function startStimulation(){
