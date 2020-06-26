@@ -6,7 +6,6 @@ function App() {
   const [board, setBoard] = useState([]);
   const [started, setStarted] = useState(false);
   const [changes, setChanges] = useState([]);
-  //const [iterations, setIterations] = useState(0); 
 
   useEffect(() => {
     let interval = null;
@@ -19,6 +18,7 @@ function App() {
     }
     return () => clearInterval(interval);
   }, [started, changes]);
+
 
   //generateBoard from boardSize args
   function generateBoard(e){
@@ -60,10 +60,6 @@ function App() {
     let count = 0;
     //find a more efficient way to iterate
 
-    if(x === 0 && y === 2){
-      //console.log("break here");
-    }
-
     //col1
     //out of first array bounds
     if(x - 1 >= 0){
@@ -84,9 +80,7 @@ function App() {
       count = (board[x][y+1].active) ? count + 1 : count;
     }
     
-    //why is count 2???
-    //for 0,0 count increments at col 2 and 3 when it should only on 3 at [x+1][y]
-    
+
     //col3
     //check second array bounds
     if(x + 1 <= boardSize - 1){
@@ -98,9 +92,6 @@ function App() {
         count = (board[x+1][y+1].active) ? count + 1 : count;
       }
     }
-
-    //console.log("x: " + x + " y:" + y + " with " + count + " neighbours");
-
 
     return count;
   }
@@ -142,6 +133,7 @@ function App() {
   }
   function rule2(x, y){
     //This function does nothing
+    //rule not needed
   }
   
   function rule3(x, y){
@@ -176,7 +168,6 @@ function App() {
   }
   
   function simulationLoop(){
-    //might have to use promises to make functions go in order
     parseBoard();
     applyUpdates();
   }
